@@ -6,6 +6,7 @@
 #pragma once
 
 #include "a78_slot.h"
+#include "sound/ay8910.h"
 #include "sound/pokey.h"
 
 
@@ -104,6 +105,8 @@ public:
 	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
+	a78_rom_sg_pokey_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
+
 	virtual void device_add_mconfig(machine_config &config) override;
 
 	required_device<pokey_device> m_pokey;
@@ -371,6 +374,92 @@ protected:
 	required_device<pokey_device> m_pokey800;
 };
 
+// PCB variants with a YM2149 at $0460/$0461
+
+class a78_rom_y460_device : public a78_rom_device
+{
+public:
+	a78_rom_y460_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+};
+
+class a78_rom_y460_pokey_device : public a78_rom_pokey_device
+{
+public:
+	a78_rom_y460_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+};
+
+class a78_rom_y460_sg_device : public a78_rom_sg_device
+{
+public:
+	a78_rom_y460_sg_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+};
+
+class a78_rom_y460_sg_pokey_device : public a78_rom_sg_pokey_device
+{
+public:
+	a78_rom_y460_sg_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+};
+
+class a78_rom_y460_sg_ram_device : public a78_rom_sg_ram_device
+{
+public:
+	a78_rom_y460_sg_ram_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+};
+
+class a78_rom_y460_sg9_device : public a78_rom_sg9_device
+{
+public:
+	a78_rom_y460_sg9_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+
+protected:
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+};
+
 // device type definition
 DECLARE_DEVICE_TYPE(A78_ROM,             a78_rom_device)
 DECLARE_DEVICE_TYPE(A78_ROM_SG,          a78_rom_sg_device)
@@ -395,5 +484,13 @@ DECLARE_DEVICE_TYPE(A78_ROM_P800_POKEY,  a78_rom_p800_pokey_device)
 DECLARE_DEVICE_TYPE(A78_ROM_P800_SG,     a78_rom_p800_sg_device)
 DECLARE_DEVICE_TYPE(A78_ROM_P800_SG_RAM, a78_rom_p800_sg_ram_device)
 DECLARE_DEVICE_TYPE(A78_ROM_P800_SG9,    a78_rom_p800_sg9_device)
+
+// PCB variants with a YM2149 at $0460
+DECLARE_DEVICE_TYPE(A78_ROM_Y460,        a78_rom_y460_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y460_POKEY,  a78_rom_y460_pokey_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG,     a78_rom_y460_sg_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG_POKEY, a78_rom_y460_sg_pokey_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG_RAM, a78_rom_y460_sg_ram_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG9,    a78_rom_y460_sg9_device)
 
 #endif // MAME_BUS_A7800_ROM_H

@@ -49,6 +49,12 @@ DEFINE_DEVICE_TYPE(A78_ROM_P800_POKEY,  a78_rom_p800_pokey_device,  "a78_p800_t1
 DEFINE_DEVICE_TYPE(A78_ROM_P800_SG,     a78_rom_p800_sg_device,     "a78_p800_t2",  "Atari 7800 ROM Carts w/SuperGame Bankswitch + POKEY @ 0x0800")
 DEFINE_DEVICE_TYPE(A78_ROM_P800_SG_RAM, a78_rom_p800_sg_ram_device, "a78_p800_t6",  "Atari 7800 ROM Carts w/SuperGame Bankswitch + RAM0 0x800")
 DEFINE_DEVICE_TYPE(A78_ROM_P800_SG9,    a78_rom_p800_sg9_device,    "a78_p800_ta",  "Atari 7800 ROM Carts w/SuperGame 9Banks + POKEY @ 0x0800")
+DEFINE_DEVICE_TYPE(A78_ROM_Y460,        a78_rom_y460_device,        "a78_y460_t0",  "Atari 7800 ROM Carts w/YM2149 @ 0x0460")
+DEFINE_DEVICE_TYPE(A78_ROM_Y460_POKEY,  a78_rom_y460_pokey_device,  "a78_y460_t1",  "Atari 7800 ROM Carts w/no Bankswitch + POKEY + YM2149 @ 0x0460")
+DEFINE_DEVICE_TYPE(A78_ROM_Y460_SG,     a78_rom_y460_sg_device,     "a78_y460_t2",  "Atari 7800 ROM Carts w/SuperGame Bankswitch + YM2149 @ 0x0460")
+DEFINE_DEVICE_TYPE(A78_ROM_Y460_SG_POKEY, a78_rom_y460_sg_pokey_device, "a78_y460_t3", "Atari 7800 ROM Carts w/SuperGame Bankswitch + POKEY + YM2149 @ 0x0460")
+DEFINE_DEVICE_TYPE(A78_ROM_Y460_SG_RAM, a78_rom_y460_sg_ram_device, "a78_y460_t6",  "Atari 7800 ROM Carts w/SuperGame Bankswitch + RAM + YM2149 @ 0x0460")
+DEFINE_DEVICE_TYPE(A78_ROM_Y460_SG9,    a78_rom_y460_sg9_device,    "a78_y460_ta",  "Atari 7800 ROM Carts w/SuperGame 9Banks + YM2149 @ 0x0460")
 
 
 a78_rom_device::a78_rom_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock)
@@ -95,9 +101,14 @@ a78_rom_sg_device::a78_rom_sg_device(const machine_config &mconfig, const char *
 {
 }
 
-a78_rom_sg_pokey_device::a78_rom_sg_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
-	: a78_rom_sg_device(mconfig, A78_ROM_SG_POKEY, tag, owner, clock)
+a78_rom_sg_pokey_device::a78_rom_sg_pokey_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_sg_device(mconfig, type, tag, owner, clock)
 	, m_pokey(*this, "pokey")
+{
+}
+
+a78_rom_sg_pokey_device::a78_rom_sg_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_sg_pokey_device(mconfig, A78_ROM_SG_POKEY, tag, owner, clock)
 {
 }
 
@@ -135,6 +146,42 @@ a78_rom_abs_device::a78_rom_abs_device(const machine_config &mconfig, const char
 a78_rom_act_device::a78_rom_act_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
 	: a78_rom_device(mconfig, A78_ROM_ACTIVISION, tag, owner, clock)
 	, m_bank(0)
+{
+}
+
+a78_rom_y460_device::a78_rom_y460_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_device(mconfig, A78_ROM_Y460, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
+{
+}
+
+a78_rom_y460_pokey_device::a78_rom_y460_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_pokey_device(mconfig, A78_ROM_Y460_POKEY, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
+{
+}
+
+a78_rom_y460_sg_device::a78_rom_y460_sg_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_sg_device(mconfig, A78_ROM_Y460_SG, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
+{
+}
+
+a78_rom_y460_sg_pokey_device::a78_rom_y460_sg_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_sg_pokey_device(mconfig, A78_ROM_Y460_SG_POKEY, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
+{
+}
+
+a78_rom_y460_sg_ram_device::a78_rom_y460_sg_ram_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_sg_ram_device(mconfig, A78_ROM_Y460_SG_RAM, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
+{
+}
+
+a78_rom_y460_sg9_device::a78_rom_y460_sg9_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_sg9_device(mconfig, A78_ROM_Y460_SG9, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
 {
 }
 
@@ -540,6 +587,54 @@ WRITE8_MEMBER(a78_rom_act_device::write_40xx)
 		m_bank = offset & 7;
 }
 
+WRITE8_MEMBER(a78_rom_y460_device::write_04xx)
+{
+	if (offset == 0x60)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x61)
+		m_ym2149->data_w(space, 0, data);
+}
+
+WRITE8_MEMBER(a78_rom_y460_pokey_device::write_04xx)
+{
+	if (offset == 0x60)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x61)
+		m_ym2149->data_w(space, 0, data);
+}
+
+WRITE8_MEMBER(a78_rom_y460_sg_device::write_04xx)
+{
+	if (offset == 0x60)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x61)
+		m_ym2149->data_w(space, 0, data);
+}
+
+WRITE8_MEMBER(a78_rom_y460_sg_pokey_device::write_04xx)
+{
+	if (offset == 0x60)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x61)
+		m_ym2149->data_w(space, 0, data);
+}
+
+WRITE8_MEMBER(a78_rom_y460_sg_ram_device::write_04xx)
+{
+	if (offset == 0x60)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x61)
+		m_ym2149->data_w(space, 0, data);
+}
+
+WRITE8_MEMBER(a78_rom_y460_sg9_device::write_04xx)
+{
+	if (offset == 0x60)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x61)
+		m_ym2149->data_w(space, 0, data);
+}
+
 
 // Machine configs for PCB variants with a POKEY at $0450
 
@@ -618,4 +713,54 @@ MACHINE_CONFIG_MEMBER( a78_rom_p800_sg9_device::device_add_mconfig )
 
 	MCFG_SOUND_ADD("pokey800", POKEY, CLK_NTSC)
 	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "pokey_800", 1.00)
+MACHINE_CONFIG_END
+
+// Machine configs for PCB variants with a YM2149 at $0460
+
+MACHINE_CONFIG_MEMBER( a78_rom_y460_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("ym2149_460")
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "ym2149_460", 1.00)
+MACHINE_CONFIG_END
+
+MACHINE_CONFIG_MEMBER( a78_rom_y460_pokey_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("addon")
+
+	MCFG_SOUND_ADD("pokey", POKEY, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "addon", 1.00)
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "addon", 1.00)
+MACHINE_CONFIG_END
+
+MACHINE_CONFIG_MEMBER( a78_rom_y460_sg_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("ym2149_460")
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "ym2149_460", 1.00)
+MACHINE_CONFIG_END
+
+MACHINE_CONFIG_MEMBER( a78_rom_y460_sg_pokey_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("addon")
+
+	MCFG_SOUND_ADD("pokey", POKEY, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "addon", 1.00)
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "addon", 1.00)
+MACHINE_CONFIG_END
+
+MACHINE_CONFIG_MEMBER( a78_rom_y460_sg_ram_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("ym2149_460")
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "ym2149_460", 1.00)
+MACHINE_CONFIG_END
+
+MACHINE_CONFIG_MEMBER( a78_rom_y460_sg9_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("ym2149_460")
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "ym2149_460", 1.00)
 MACHINE_CONFIG_END

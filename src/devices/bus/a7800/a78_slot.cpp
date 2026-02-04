@@ -330,7 +330,13 @@ static const a78_slot slot_list[] =
 	{ A78_TYPE1_POK800, "a78_p800_t1" },
 	{ A78_TYPE2_POK800, "a78_p800_t2" },
 	{ A78_TYPE6_POK800, "a78_p800_t6" },
-	{ A78_TYPEA_POK800, "a78_p800_ta" }
+	{ A78_TYPEA_POK800, "a78_p800_ta" },
+	{ A78_TYPE0_YM2149, "a78_y460_t0" },
+	{ A78_TYPE1_YM2149, "a78_y460_t1" },
+	{ A78_TYPE2_YM2149, "a78_y460_t2" },
+	{ A78_TYPE3_YM2149, "a78_y460_t3" },
+	{ A78_TYPE6_YM2149, "a78_y460_t6" },
+	{ A78_TYPEA_YM2149, "a78_y460_ta" }
 
 };
 
@@ -404,6 +410,8 @@ image_init_result a78_cart_slot_device::call_load()
 
 			// let's try to auto-fix some common errors in the header
 			mapper = validate_header((head[53] << 8) | head[54], true);
+			const uint8_t header_version = head[0];
+			const bool has_ym2149 = (header_version >= 4) ? BIT(head[66], 6) : false;
 
 			switch (mapper & 0xe02e)
 			{
@@ -474,6 +482,20 @@ image_init_result a78_cart_slot_device::call_load()
 				case 0x800a:
 					m_type = A78_TYPEA_POK800;
 					break;
+			}
+
+			if (has_ym2149)
+			{
+				switch (m_type)
+				{
+					case A78_TYPE0: m_type = A78_TYPE0_YM2149; break;
+					case A78_TYPE1: m_type = A78_TYPE1_YM2149; break;
+					case A78_TYPE2: m_type = A78_TYPE2_YM2149; break;
+					case A78_TYPE3: m_type = A78_TYPE3_YM2149; break;
+					case A78_TYPE6: m_type = A78_TYPE6_YM2149; break;
+					case A78_TYPEA: m_type = A78_TYPEA_YM2149; break;
+					default: break;
+				}
 			}
 
 			// check if cart has a POKEY at $0450 (typically a VersaBoard variant)
@@ -585,6 +607,8 @@ std::string a78_cart_slot_device::get_default_card_software(get_default_card_sof
 
 		// let's try to auto-fix some common errors in the header
 		mapper = validate_header((head[53] << 8) | head[54], false);
+		const uint8_t header_version = head[0];
+		const bool has_ym2149 = (header_version >= 4) ? BIT(head[66], 6) : false;
 
 		switch (mapper & 0xe02e)
 		{
@@ -664,6 +688,20 @@ std::string a78_cart_slot_device::get_default_card_software(get_default_card_sof
 			if (!(mapper & 0x2000))
 			{
 				type += A78_POKEY0450;
+			}
+		}
+
+		if (has_ym2149)
+		{
+			switch (type)
+			{
+				case A78_TYPE0: type = A78_TYPE0_YM2149; break;
+				case A78_TYPE1: type = A78_TYPE1_YM2149; break;
+				case A78_TYPE2: type = A78_TYPE2_YM2149; break;
+				case A78_TYPE3: type = A78_TYPE3_YM2149; break;
+				case A78_TYPE6: type = A78_TYPE6_YM2149; break;
+				case A78_TYPEA: type = A78_TYPEA_YM2149; break;
+				default: break;
 			}
 		}
 
@@ -809,6 +847,20 @@ WRITE8_MEMBER(a78_cart_slot_device::write_40xx)
         | 1 = Expansion     |
         |     required      |
  -------|-------------------|-----------
+ 64     | v4 mapper info    |  2 bytes
+        |                   |
+        | mapper + options  |
+ -------|-------------------|-----------
+ 66     | v4 audio_hi       |  1 byte
+        |                   |
+        | bit 6 = YM2149 @ $0460/$0461
+ -------|-------------------|-----------
+ 67     | v4 audio_lo       |  1 byte
+ -------|-------------------|-----------
+ 68     | v4 irq_hi         |  1 byte
+ -------|-------------------|-----------
+ 69     | v4 irq_lo         |  1 byte
+ -------|-------------------|-----------
 
 
  [*] Cart type:
@@ -834,10 +886,12 @@ void a78_cart_slot_device::internal_header_logging(uint8_t *header, uint32_t len
 {
 	char head_title[35];
 	uint32_t head_length = (header[49] << 24) | (header[50] << 16) | (header[51] << 8) | header[52];
+	uint8_t head_version = header[0];
 	uint16_t head_mapper = (header[53] << 8) | header[54];
 	uint8_t head_ctrl1 = header[55];
 	uint8_t head_ctrl2 = header[56];
 	uint8_t head_ispal = header[57];
+	uint8_t head_audio_hi = (head_version >= 4) ? header[66] : 0;
 	std::string cart_mapper, ctrl1, ctrl2;
 	memcpy(head_title, header + 0x11, 0x20);
 
@@ -929,6 +983,8 @@ void a78_cart_slot_device::internal_header_logging(uint8_t *header, uint32_t len
 	logerror( "\t\tbanked RAM:      %s\n", BIT(head_mapper, 5) ? "Yes" : "No");
 	logerror( "\t\tPOKEY at $450:   %s\n", BIT(head_mapper, 6) ? "Yes" : "No");
 	logerror( "\t\tmRAM at $4000:   %s\n", BIT(head_mapper, 7) ? "Yes" : "No");
+	if (head_version >= 4)
+		logerror( "\t\tYM2149 at $460:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
 	logerror( "\t\tSpecial:         %s ", (head_mapper & 0xff00) ? "Yes" : "No");
 	if (head_mapper & 0xff00)
 	{

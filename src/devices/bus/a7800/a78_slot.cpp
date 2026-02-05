@@ -984,7 +984,9 @@ void a78_cart_slot_device::internal_header_logging(uint8_t *header, uint32_t len
 	logerror( "\t\tPOKEY at $450:   %s\n", BIT(head_mapper, 6) ? "Yes" : "No");
 	logerror( "\t\tmRAM at $4000:   %s\n", BIT(head_mapper, 7) ? "Yes" : "No");
 	if (head_version >= 4)
+	{
 		logerror( "\t\tYM2149 at $460:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
+	}
 	logerror( "\t\tSpecial:         %s ", (head_mapper & 0xff00) ? "Yes" : "No");
 	if (head_mapper & 0xff00)
 	{

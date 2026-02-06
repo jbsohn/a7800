@@ -90,7 +90,7 @@ OVERRIDE_CXX = /opt/local/bin/clang++-mp-3.7
 PYTHON_EXECUTABLE = /opt/local/bin/python2.7
 #SDL_INSTALL_ROOT = /opt/local/include
 #USE_LIBSDL = 1
-USE_BUNDLED_LIB_SDL2 = 1
+# USE_BUNDLED_LIB_SDL2 = 1
 ARCHOPTS=-stdlib=libc++
 
 # DEPRECATED = 1
@@ -1294,6 +1294,11 @@ macosx_x64: generate $(PROJECTDIR)/$(MAKETYPE)-osx/Makefile
 	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx config=$(CONFIG)64 precompile
 	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx config=$(CONFIG)64
 
+.PHONY: macosx_arm64
+macosx_arm64: generate $(PROJECTDIR)/$(MAKETYPE)-osx/Makefile
+	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx config=$(CONFIG) precompile
+	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx config=$(CONFIG)
+
 .PHONY: macosx
 macosx: macosx_x86
 
@@ -1313,6 +1318,11 @@ $(PROJECTDIR)/$(MAKETYPE)-osx-clang/Makefile: makefile $(SCRIPTS) $(GENIE)
 macosx_x64_clang: generate $(PROJECTDIR)/$(MAKETYPE)-osx-clang/Makefile
 	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx-clang config=$(CONFIG)64 precompile
 	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx-clang config=$(CONFIG)64
+
+.PHONY: macosx_arm64_clang
+macosx_arm64_clang: generate $(PROJECTDIR)/$(MAKETYPE)-osx-clang/Makefile
+	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx-clang config=$(CONFIG) precompile
+	$(SILENT) $(MAKE) $(MAKEPARAMS) -C $(PROJECTDIR)/$(MAKETYPE)-osx-clang config=$(CONFIG)
 
 .PHONY: macosx_x86_clang
 macosx_x86_clang: generate $(PROJECTDIR)/$(MAKETYPE)-osx-clang/Makefile
@@ -1728,4 +1738,3 @@ translation:
 	$(SILENT) find src -iname "*.cpp" | xargs xgettext --from-code=UTF-8 -k_ -k__ -o mame.pot
 	$(SILENT) find language -iname "*.po" | xargs -n 1 -I %% msgmerge -U -N %% mame.pot
 	$(SILENT) find language -iname "*.po" | xargs -n 1 -I %% msgattrib --clear-fuzzy --empty %% -o %%
-

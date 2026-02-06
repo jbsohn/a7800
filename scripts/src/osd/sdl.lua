@@ -281,7 +281,17 @@ if BASE_TARGETOS=="unix" then
 					"SDL2.framework",
 				}
 			else
-				local str = backtick(sdlconfigcmd() .. " --libs --static | sed 's/-lSDLmain//'")
+				local str = backtick(sdlconfigcmd() .. " --libs | sed 's/-lSDLmain//' | sed 's/-lSDL2//'")
+				local sdllib = backtick(pkgconfigcmd() .. " --variable=libdir sdl2")
+				if sdllib ~= "" then
+					linkoptions {
+						sdllib .. "/libSDL2.dylib",
+					}
+				else
+					links {
+						"SDL2",
+					}
+				end
 				addlibfromstring(str)
 				addoptionsfromstring(str)
 			end
@@ -491,5 +501,3 @@ project ("ocore_" .. _OPTIONS["osd"])
 			MAME_DIR .. "src/osd/modules/file/stdfile.cpp",
 		}
 	end
-
-

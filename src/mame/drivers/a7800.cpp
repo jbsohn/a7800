@@ -1517,15 +1517,6 @@ void a7800_state::machine_start()
 				m_maincpu->space(AS_PROGRAM).install_readwrite_handler(0x1000, 0x17ff, read8_delegate(FUNC(a78_cart_slot_device::read_10xx),(a78_cart_slot_device*)m_cart), write8_delegate(FUNC(a78_cart_slot_device::write_10xx),(a78_cart_slot_device*)m_cart));
 				m_maincpu->space(AS_PROGRAM).install_readwrite_handler(0x3000, 0x3fff, read8_delegate(FUNC(a78_cart_slot_device::read_30xx),(a78_cart_slot_device*)m_cart), write8_delegate(FUNC(a78_cart_slot_device::write_30xx),(a78_cart_slot_device*)m_cart));
 				break;
-			case A78_TYPE0_YM2149:
-			case A78_TYPE1_YM2149:
-			case A78_TYPE2_YM2149:
-			case A78_TYPE3_YM2149:
-			case A78_TYPE6_YM2149:
-			case A78_TYPEA_YM2149:
-				// YM2149 regs at 0x460/0x461 (cartridge-provided)
-				m_maincpu->space(AS_PROGRAM).install_readwrite_handler(0x0400, 0x04FF, read8_delegate(FUNC(a78_cart_slot_device::read_04xx),(a78_cart_slot_device*)m_cart), write8_delegate(FUNC(a78_cart_slot_device::write_04xx),(a78_cart_slot_device*)m_cart));
-				break;
 		}
 	}
 }

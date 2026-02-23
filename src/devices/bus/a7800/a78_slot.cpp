@@ -331,12 +331,12 @@ static const a78_slot slot_list[] =
 	{ A78_TYPE2_POK800, "a78_p800_t2" },
 	{ A78_TYPE6_POK800, "a78_p800_t6" },
 	{ A78_TYPEA_POK800, "a78_p800_ta" },
-	{ A78_TYPE0_YM2149, "a78_y460_t0" },
-	{ A78_TYPE1_YM2149, "a78_y460_t1" },
-	{ A78_TYPE2_YM2149, "a78_y460_t2" },
-	{ A78_TYPE3_YM2149, "a78_y460_t3" },
-	{ A78_TYPE6_YM2149, "a78_y460_t6" },
-	{ A78_TYPEA_YM2149, "a78_y460_ta" }
+	{ A78_TYPE0_YM2149, "a78_y4000_t0" },
+	{ A78_TYPE1_YM2149, "a78_y4000_t1" },
+	{ A78_TYPE2_YM2149, "a78_y4000_t2" },
+	{ A78_TYPE3_YM2149, "a78_y4000_t3" },
+	{ A78_TYPE6_YM2149, "a78_y4000_t6" },
+	{ A78_TYPEA_YM2149, "a78_y4000_ta" }
 
 };
 
@@ -853,7 +853,7 @@ WRITE8_MEMBER(a78_cart_slot_device::write_40xx)
  -------|-------------------|-----------
  66     | v4 audio_hi       |  1 byte
         |                   |
-        | bit 6 = YM2149 @ $0460/$0461
+        | bit 6 = YM2149 @ $4000/$4001
  -------|-------------------|-----------
  67     | v4 audio_lo       |  1 byte
  -------|-------------------|-----------
@@ -985,7 +985,7 @@ void a78_cart_slot_device::internal_header_logging(uint8_t *header, uint32_t len
 	logerror( "\t\tmRAM at $4000:   %s\n", BIT(head_mapper, 7) ? "Yes" : "No");
 	if (head_version >= 4)
 	{
-		logerror( "\t\tYM2149 at $460:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
+		logerror( "\t\tYM2149 at $4000:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
 	}
 	logerror( "\t\tSpecial:         %s ", (head_mapper & 0xff00) ? "Yes" : "No");
 	if (head_mapper & 0xff00)

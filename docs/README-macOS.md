@@ -51,9 +51,9 @@ For static builds, `otool -L mame` should not list SDL2.
 ## YM2149 Work In Progress
 
 - YM2149 currently works in emulation; this work also supports the effort to add YM2149 support to real cartridge hardware.
-- Added initial YM2149 cart support using A78 header v4 `audio_hi` bit 6 (`YM2149 @ $0460/$0461`).
+- Added initial YM2149 cart support using A78 header v4 `audio_hi` bit 6 (`YM2149 @ $4000/$4001`).
 - Extended cart type detection/selection to YM2149 variants (including POKEY/SuperGame combinations).
-- Added YM2149-capable cart device types and mapped YM2149 register writes via `$0460/$0461`.
+- Added YM2149-capable cart device types and mapped YM2149 register writes via `$4000/$4001`.
 - Updated header logging to report YM2149 presence when v4 header fields are available.
 
 Primary files involved:

@@ -55,7 +55,7 @@ enum
 	A78_TYPE6_POK800 = 0x84,
 	A78_TYPEA_POK800 = 0x85,
 
-	// Cartridge-provided YM2149 at $0460/$0461
+	// Cartridge-provided YM2149 at $4000/$4001
 	A78_TYPE0_YM2149 = 0x90,
 	A78_TYPE1_YM2149 = 0x91,
 	A78_TYPE2_YM2149 = 0x92,

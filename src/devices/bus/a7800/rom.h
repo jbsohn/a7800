@@ -374,15 +374,14 @@ protected:
 	required_device<pokey_device> m_pokey800;
 };
 
-// PCB variants with a YM2149 at $0460/$0461
+// PCB variants with a YM2149 at $4000/$4001
 
-class a78_rom_y460_device : public a78_rom_device
+class a78_rom_y4000_device : public a78_rom_device
 {
 public:
-	a78_rom_y460_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+	a78_rom_y4000_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
-	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
-	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override;
@@ -390,13 +389,12 @@ protected:
 	required_device<ym2149_device> m_ym2149;
 };
 
-class a78_rom_y460_pokey_device : public a78_rom_pokey_device
+class a78_rom_y4000_pokey_device : public a78_rom_pokey_device
 {
 public:
-	a78_rom_y460_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+	a78_rom_y4000_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
-	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
-	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override;
@@ -404,13 +402,12 @@ protected:
 	required_device<ym2149_device> m_ym2149;
 };
 
-class a78_rom_y460_sg_device : public a78_rom_sg_device
+class a78_rom_y4000_sg_device : public a78_rom_sg_device
 {
 public:
-	a78_rom_y460_sg_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+	a78_rom_y4000_sg_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
-	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
-	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override;
@@ -418,13 +415,12 @@ protected:
 	required_device<ym2149_device> m_ym2149;
 };
 
-class a78_rom_y460_sg_pokey_device : public a78_rom_sg_pokey_device
+class a78_rom_y4000_sg_pokey_device : public a78_rom_sg_pokey_device
 {
 public:
-	a78_rom_y460_sg_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+	a78_rom_y4000_sg_pokey_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
-	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
-	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override;
@@ -432,13 +428,12 @@ protected:
 	required_device<ym2149_device> m_ym2149;
 };
 
-class a78_rom_y460_sg_ram_device : public a78_rom_sg_ram_device
+class a78_rom_y4000_sg_ram_device : public a78_rom_sg_ram_device
 {
 public:
-	a78_rom_y460_sg_ram_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+	a78_rom_y4000_sg_ram_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
-	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
-	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override;
@@ -446,13 +441,12 @@ protected:
 	required_device<ym2149_device> m_ym2149;
 };
 
-class a78_rom_y460_sg9_device : public a78_rom_sg9_device
+class a78_rom_y4000_sg9_device : public a78_rom_sg9_device
 {
 public:
-	a78_rom_y460_sg9_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+	a78_rom_y4000_sg9_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
-	virtual DECLARE_READ8_MEMBER(read_04xx) override { return 0xff; }
-	virtual DECLARE_WRITE8_MEMBER(write_04xx) override;
+	virtual DECLARE_WRITE8_MEMBER(write_40xx) override;
 
 protected:
 	virtual void device_add_mconfig(machine_config &config) override;
@@ -485,12 +479,12 @@ DECLARE_DEVICE_TYPE(A78_ROM_P800_SG,     a78_rom_p800_sg_device)
 DECLARE_DEVICE_TYPE(A78_ROM_P800_SG_RAM, a78_rom_p800_sg_ram_device)
 DECLARE_DEVICE_TYPE(A78_ROM_P800_SG9,    a78_rom_p800_sg9_device)
 
-// PCB variants with a YM2149 at $0460
-DECLARE_DEVICE_TYPE(A78_ROM_Y460,        a78_rom_y460_device)
-DECLARE_DEVICE_TYPE(A78_ROM_Y460_POKEY,  a78_rom_y460_pokey_device)
-DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG,     a78_rom_y460_sg_device)
-DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG_POKEY, a78_rom_y460_sg_pokey_device)
-DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG_RAM, a78_rom_y460_sg_ram_device)
-DECLARE_DEVICE_TYPE(A78_ROM_Y460_SG9,    a78_rom_y460_sg9_device)
+// PCB variants with a YM2149 at $4000
+DECLARE_DEVICE_TYPE(A78_ROM_Y4000,        a78_rom_y4000_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y4000_POKEY,  a78_rom_y4000_pokey_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y4000_SG,     a78_rom_y4000_sg_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y4000_SG_POKEY, a78_rom_y4000_sg_pokey_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y4000_SG_RAM, a78_rom_y4000_sg_ram_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y4000_SG9,    a78_rom_y4000_sg9_device)
 
 #endif // MAME_BUS_A7800_ROM_H

@@ -19,25 +19,25 @@ brew install sdl2
 ```
 
 ## Build Commands (Apple Silicon / arm64)
-
 Clean:
 
 ```bash
-make -f makefile-osx clean PYTHON_EXECUTABLE=python3
+make -f makefile-osx clean
 ```
+
+## Build Commands (Apple Silicon / arm64)
 
 Dynamic SDL build:
 
 ```bash
-make -f makefile-osx macosx_arm64 USE_LIBSDL=1 PYTHON_EXECUTABLE=python3 CC=clang CXX=clang++
+make -f makefile-osx macosx_arm64 USE_LIBSDL=1 CC=clang CXX=clang++
 ```
 
 Static SDL build:
 
 ```bash
-make -f makefile-osx macosx_arm64 USE_LIBSDL=1 USE_LIBSDL_STATIC=1 PYTHON_EXECUTABLE=python3 CC=clang CXX=clang++
+make -f makefile-osx macosx_arm64 USE_LIBSDL=1 USE_LIBSDL_STATIC=1 CC=clang CXX=clang++
 ```
-
 ## Quick Validation
 
 ```bash

@@ -85,8 +85,8 @@ IGNORE_GIT = 1
 # OVERRIDE_CXX = c++
 # OVERRIDE_LD = ld
 
-OVERRIDE_CC = /opt/local/bin/clang-mp-3.7
-OVERRIDE_CXX = /opt/local/bin/clang++-mp-3.7
+#OVERRIDE_CC = /opt/local/bin/clang-mp-3.7
+#OVERRIDE_CXX = /opt/local/bin/clang++-mp-3.7
 #PYTHON_EXECUTABLE = /opt/local/bin/python2.7
 PYTHON_EXECUTABLE = python3
 #SDL_INSTALL_ROOT = /opt/local/include

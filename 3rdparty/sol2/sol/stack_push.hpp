@@ -546,7 +546,8 @@ namespace sol {
 			}
 
 			static int push(lua_State* L, const wchar_t(&str)[N], std::size_t sz) {
-				return stack::push<const wchar_t*>(L, str, str + sz);
+				const wchar_t* ptr = str;
+				return stack::push<const wchar_t*>(L, ptr, ptr + sz);
 			}
 		};
 
@@ -557,7 +558,8 @@ namespace sol {
 			}
 
 			static int push(lua_State* L, const char16_t(&str)[N], std::size_t sz) {
-				return stack::push<const char16_t*>(L, str, str + sz);
+				const char16_t* ptr = str;
+				return stack::push<const char16_t*>(L, ptr, ptr + sz);
 			}
 		};
 
@@ -568,7 +570,8 @@ namespace sol {
 			}
 
 			static int push(lua_State* L, const char32_t(&str)[N], std::size_t sz) {
-				return stack::push<const char32_t*>(L, str, str + sz);
+				const char32_t* ptr = str;
+				return stack::push<const char32_t*>(L, ptr, ptr + sz);
 			}
 		};
 
@@ -576,7 +579,8 @@ namespace sol {
 		struct pusher<wchar_t> {
 			static int push(lua_State* L, wchar_t c) {
 				const wchar_t str[2] = { c, '\0' };
-				return stack::push(L, str, 1);
+				const wchar_t* ptr = str;
+				return stack::push<const wchar_t*>(L, ptr, ptr + 1);
 			}
 		};
 
@@ -584,7 +588,8 @@ namespace sol {
 		struct pusher<char16_t> {
 			static int push(lua_State* L, char16_t c) {
 				const char16_t str[2] = { c, '\0' };
-				return stack::push(L, str, 1);
+				const char16_t* ptr = str;
+				return stack::push<const char16_t*>(L, ptr, ptr + 1);
 			}
 		};
 
@@ -592,7 +597,8 @@ namespace sol {
 		struct pusher<char32_t> {
 			static int push(lua_State* L, char32_t c) {
 				const char32_t str[2] = { c, '\0' };
-				return stack::push(L, str, 1);
+				const char32_t* ptr = str;
+				return stack::push<const char32_t*>(L, ptr, ptr + 1);
 			}
 		};
 

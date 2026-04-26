@@ -1075,12 +1075,27 @@ function toolchain(_buildDir, _subDir)
 	configuration { "osx*", "x64", "Release" }
 		targetdir (_buildDir .. "osx_clang" .. "/bin/x64/Release")
 
-	configuration { "osx*", "x64", "Debug" }
-		targetdir (_buildDir .. "osx_clang" .. "/bin/x64/Debug")
+		configuration { "osx*", "x64", "Debug" }
+			targetdir (_buildDir .. "osx_clang" .. "/bin/x64/Debug")
 
-	configuration { "ios-arm" }
-		targetdir (_buildDir .. "ios-arm" .. "/bin")
-		objdir (_buildDir .. "ios-arm" .. "/obj")
+		configuration { "osx*", "Native" }
+			objdir (_buildDir .. "osx_clang" .. "/obj")
+			defines {
+				"PTR64=1",
+			}
+			buildoptions {
+				"-arch arm64",
+			}
+
+		configuration { "osx*", "Native", "Release" }
+			targetdir (_buildDir .. "osx_clang" .. "/bin/arm64/Release")
+
+		configuration { "osx*", "Native", "Debug" }
+			targetdir (_buildDir .. "osx_clang" .. "/bin/arm64/Debug")
+
+		configuration { "ios-arm" }
+			targetdir (_buildDir .. "ios-arm" .. "/bin")
+			objdir (_buildDir .. "ios-arm" .. "/obj")
 
 	configuration { "ios-simulator" }
 		targetdir (_buildDir .. "ios-simulator" .. "/bin")
@@ -1144,4 +1159,3 @@ function strip()
 
 	configuration {} -- reset configuration
 end
-

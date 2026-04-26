@@ -73,7 +73,7 @@ class OpcodeList:
         self.ea = {}
         self.macros = {}
         try:
-            f = open(fname, "rU")
+            f = open(fname, "r")
         except Exception:
             err = sys.exc_info()[1]
             sys.stderr.write("Cannot read opcodes file %s [%s]\n" % (fname, err))
@@ -195,4 +195,3 @@ def main(argv):
 # ======================================================================
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-

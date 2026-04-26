@@ -220,6 +220,19 @@ if not _OPTIONS["USE_LIBSDL"] then
 	_OPTIONS["USE_LIBSDL"] = "0"
 end
 
+newoption {
+	trigger = "USE_LIBSDL_STATIC",
+	description = "Use static SDL library on macOS when USE_LIBSDL=1",
+	allowed = {
+		{ "0",  "Use dynamic SDL library" },
+		{ "1",  "Use static SDL library"  },
+	},
+}
+
+if not _OPTIONS["USE_LIBSDL_STATIC"] then
+	_OPTIONS["USE_LIBSDL_STATIC"] = "0"
+end
+
 
 BASE_TARGETOS       = "unix"
 SDLOS_TARGETOS      = "unix"
@@ -272,20 +285,45 @@ if BASE_TARGETOS=="unix" then
 				"-framework IOKit",
 				"-framework CoreVideo",
 			}
-		else
-			if _OPTIONS["USE_LIBSDL"]~="1" then
-				linkoptions {
-					"-F" .. _OPTIONS["SDL_FRAMEWORK_PATH"],
-				}
+			else
+				if _OPTIONS["USE_LIBSDL"]~="1" then
+					linkoptions {
+						"-F" .. _OPTIONS["SDL_FRAMEWORK_PATH"],
+					}
 				links {
 					"SDL2.framework",
 				}
-			else
-				local str = backtick(sdlconfigcmd() .. " --libs --static | sed 's/-lSDLmain//'")
-				addlibfromstring(str)
-				addoptionsfromstring(str)
+				else
+					local sdllib = backtick(pkgconfigcmd() .. " --variable=libdir sdl2")
+					if _OPTIONS["USE_LIBSDL_STATIC"]=="1" then
+						local str = backtick(sdlconfigcmd() .. " --libs --static | sed 's/-lSDLmain//' | sed 's/-lSDL2//'")
+						if sdllib ~= "" then
+							linkoptions {
+								"-Wl,-force_load," .. sdllib .. "/libSDL2.a",
+							}
+						else
+							links {
+								"SDL2",
+							}
+						end
+						addlibfromstring(str)
+						addoptionsfromstring(str)
+					else
+						local str = backtick(sdlconfigcmd() .. " --libs | sed 's/-lSDLmain//' | sed 's/-lSDL2//'")
+						if sdllib ~= "" then
+							linkoptions {
+								sdllib .. "/libSDL2.dylib",
+							}
+						else
+							links {
+								"SDL2",
+							}
+						end
+						addlibfromstring(str)
+						addoptionsfromstring(str)
+					end
+				end
 			end
-		end
 	else
 		if _OPTIONS["NO_X11"]=="1" then
 			_OPTIONS["USE_QTDEBUG"] = "0"
@@ -491,5 +529,3 @@ project ("ocore_" .. _OPTIONS["osd"])
 			MAME_DIR .. "src/osd/modules/file/stdfile.cpp",
 		}
 	end
-
-

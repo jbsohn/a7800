@@ -13,5 +13,10 @@ src/devices/cpu/m68000/m68kmake
 src/devices/cpu/m68000/m68kmake.o
 src/devices/cpu/m68000/m68kops.cpp
 src/devices/cpu/m68000/m68kops.h
-mame64
-a7800
+mame64.exe
+a7800.exe
+mame.exe
+cfg/
+history/
+ui.ini
+src/devices/cpu/m68000/m68kmake.exe

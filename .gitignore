@@ -20,3 +20,9 @@ cfg/
 history/
 ui.ini
 src/devices/cpu/m68000/m68kmake.exe
+mame
+mame_arm64
+mame_x64
+*.a
+scripts/mame_mame/
+scripts/src/osd/mame_mame/

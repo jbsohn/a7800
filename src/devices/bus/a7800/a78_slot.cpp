@@ -331,12 +331,12 @@ static const a78_slot slot_list[] =
 	{ A78_TYPE2_POK800, "a78_p800_t2" },
 	{ A78_TYPE6_POK800, "a78_p800_t6" },
 	{ A78_TYPEA_POK800, "a78_p800_ta" },
-	{ A78_TYPE0_YM2149, "a78_y4000_t0" },
-	{ A78_TYPE1_YM2149, "a78_y4000_t1" },
-	{ A78_TYPE2_YM2149, "a78_y4000_t2" },
-	{ A78_TYPE3_YM2149, "a78_y4000_t3" },
-	{ A78_TYPE6_YM2149, "a78_y4000_t6" },
-	{ A78_TYPEA_YM2149, "a78_y4000_ta" }
+	{ A78_TYPE0_YM2149, "a78_y800_t0" },
+	{ A78_TYPE1_YM2149, "a78_y800_t1" },
+	{ A78_TYPE2_YM2149, "a78_y800_t2" },
+	{ A78_TYPE3_YM2149, "a78_y800_t3" },
+	{ A78_TYPE6_YM2149, "a78_y800_t6" },
+	{ A78_TYPEA_YM2149, "a78_y800_ta" }
 
 };
 
@@ -411,7 +411,7 @@ image_init_result a78_cart_slot_device::call_load()
 			// let's try to auto-fix some common errors in the header
 			mapper = validate_header((head[53] << 8) | head[54], true);
 			const uint8_t header_version = head[0];
-			const bool has_ym2149 = (header_version >= 4) ? BIT(head[66], 6) : false;
+			const bool has_ym2149 = (header_version >= 4) ? ((head[66] << 8 | head[67]) == 0x0800) : false;
 
 			switch (mapper & 0xe02e)
 			{
@@ -608,7 +608,7 @@ std::string a78_cart_slot_device::get_default_card_software(get_default_card_sof
 		// let's try to auto-fix some common errors in the header
 		mapper = validate_header((head[53] << 8) | head[54], false);
 		const uint8_t header_version = head[0];
-		const bool has_ym2149 = (header_version >= 4) ? BIT(head[66], 6) : false;
+		const bool has_ym2149 = (header_version >= 4) ? ((head[66] << 8 | head[67]) == 0x0800) : false;
 
 		switch (mapper & 0xe02e)
 		{
@@ -853,7 +853,7 @@ WRITE8_MEMBER(a78_cart_slot_device::write_40xx)
  -------|-------------------|-----------
  66     | v4 audio_hi       |  1 byte
         |                   |
-        | bit 6 = YM2149 @ $4000/$4001
+        | bit 6 = YM2149 @ $0800/$0801
  -------|-------------------|-----------
  67     | v4 audio_lo       |  1 byte
  -------|-------------------|-----------
@@ -985,7 +985,7 @@ void a78_cart_slot_device::internal_header_logging(uint8_t *header, uint32_t len
 	logerror( "\t\tmRAM at $4000:   %s\n", BIT(head_mapper, 7) ? "Yes" : "No");
 	if (head_version >= 4)
 	{
-		logerror( "\t\tYM2149 at $4000:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
+		logerror( "\t\tYM2149 at $800:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
 	}
 	logerror( "\t\tSpecial:         %s ", (head_mapper & 0xff00) ? "Yes" : "No");
 	if (head_mapper & 0xff00)

@@ -1513,6 +1513,7 @@ void a7800_state::machine_start()
 			case A78_TYPE3_YM2149:
 			case A78_TYPE6_YM2149:
 			case A78_TYPEA_YM2149:
+			case A78_TYPE_YM_BANKED:
 				// POKEY/YM2149 at 0x800-0xFFF
 				m_maincpu->space(AS_PROGRAM).install_readwrite_handler(0x0800, 0x0FFF, read8_delegate(FUNC(a78_cart_slot_device::read_08xx),(a78_cart_slot_device*)m_cart), write8_delegate(FUNC(a78_cart_slot_device::write_08xx),(a78_cart_slot_device*)m_cart));
 				break;

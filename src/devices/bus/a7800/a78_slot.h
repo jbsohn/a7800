@@ -61,7 +61,11 @@ enum
 	A78_TYPE2_YM2149 = 0x92,
 	A78_TYPE3_YM2149 = 0x93,
 	A78_TYPE6_YM2149 = 0x94,
-	A78_TYPEA_YM2149 = 0x95
+	A78_TYPEA_YM2149 = 0x95,
+
+	// lokey-7800-ym 32-pin board: fixed 32K + YM-IOA-banked 16K, YM2149 @ $0800
+	// (identified by the project-specific "Mapper" byte at header offset 64
+	A78_TYPE_YM_BANKED = 0x96
 
 };
 

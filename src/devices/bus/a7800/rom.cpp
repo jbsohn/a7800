@@ -55,6 +55,7 @@ DEFINE_DEVICE_TYPE(A78_ROM_Y800_SG,     a78_rom_y800_sg_device,     "a78_y800_t2
 DEFINE_DEVICE_TYPE(A78_ROM_Y800_SG_POKEY, a78_rom_y800_sg_pokey_device, "a78_y800_t3", "Atari 7800 ROM Carts w/SuperGame Bankswitch + POKEY + YM2149 @ 0x0800")
 DEFINE_DEVICE_TYPE(A78_ROM_Y800_SG_RAM, a78_rom_y800_sg_ram_device, "a78_y800_t6",  "Atari 7800 ROM Carts w/SuperGame Bankswitch + RAM + YM2149 @ 0x0800")
 DEFINE_DEVICE_TYPE(A78_ROM_Y800_SG9,    a78_rom_y800_sg9_device,    "a78_y800_ta",  "Atari 7800 ROM Carts w/SuperGame 9Banks + YM2149 @ 0x0800")
+DEFINE_DEVICE_TYPE(A78_ROM_Y800_BANK,   a78_rom_y800_bank_device,   "a78_y800_bank", "Atari 7800 ROM Carts w/Fixed32K+YM-IOA-Banked16K + YM2149 @ 0x0800")
 
 
 a78_rom_device::a78_rom_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock)
@@ -185,6 +186,13 @@ a78_rom_y800_sg9_device::a78_rom_y800_sg9_device(const machine_config &mconfig, 
 {
 }
 
+a78_rom_y800_bank_device::a78_rom_y800_bank_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+	: a78_rom_device(mconfig, A78_ROM_Y800_BANK, tag, owner, clock)
+	, m_ym2149(*this, "ym2149")
+	, m_bank(0)
+{
+}
+
 
 
 a78_rom_p450_device::a78_rom_p450_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
@@ -286,6 +294,18 @@ void a78_rom_act_device::device_start()
 void a78_rom_act_device::device_reset()
 {
 	m_bank = 0;
+}
+
+void a78_rom_y800_bank_device::device_start()
+{
+	save_item(NAME(m_bank));
+}
+
+void a78_rom_y800_bank_device::device_reset()
+{
+	// YM IOA has pull-ups and boots in input mode (reg 7 bit 6 = 0), so the
+	// bank-select GAL input floats high == bank 15
+	m_bank = 15;
 }
 
 
@@ -636,6 +656,32 @@ WRITE8_MEMBER(a78_rom_y800_sg9_device::write_08xx)
 }
 
 
+// lokey-7800-ym 32-pin board: fixed 32K bank at 0x8000-0xffff
+READ8_MEMBER(a78_rom_y800_bank_device::read_40xx)
+{
+	if (offset < 0x4000)
+	{
+		uint32_t bank = m_bank % (m_rom_size / 0x4000);
+		return m_rom[(bank * 0x4000) + (offset & 0x3fff)];
+	}
+	else
+		return m_rom[(m_rom_size - 0x8000) + (offset - 0x4000)];
+}
+
+WRITE8_MEMBER(a78_rom_y800_bank_device::write_08xx)
+{
+	if (offset == 0x0000)
+		m_ym2149->address_w(space, 0, data);
+	else if (offset == 0x0001)
+		m_ym2149->data_w(space, 0, data);
+}
+
+WRITE8_MEMBER(a78_rom_y800_bank_device::bank_w)
+{
+	m_bank = data & 0x0f;
+}
+
+
 // Machine configs for PCB variants with a POKEY at $0450
 
 MACHINE_CONFIG_MEMBER( a78_rom_p450_device::device_add_mconfig )
@@ -763,4 +809,12 @@ MACHINE_CONFIG_MEMBER( a78_rom_y800_sg9_device::device_add_mconfig )
 
 	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
 	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "ym2149_4000", 1.00)
+MACHINE_CONFIG_END
+
+MACHINE_CONFIG_MEMBER( a78_rom_y800_bank_device::device_add_mconfig )
+	MCFG_SPEAKER_STANDARD_MONO("ym2149_800")
+
+	MCFG_SOUND_ADD("ym2149", YM2149, CLK_NTSC)
+	MCFG_AY8910_PORT_A_WRITE_CB(WRITE8(a78_rom_y800_bank_device, bank_w))
+	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "ym2149_800", 1.00)
 MACHINE_CONFIG_END

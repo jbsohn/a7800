@@ -460,6 +460,31 @@ protected:
 	required_device<ym2149_device> m_ym2149;
 };
 
+// ======================> a78_rom_y800_bank_device
+
+class a78_rom_y800_bank_device : public a78_rom_device
+{
+public:
+	// construction/destruction
+	a78_rom_y800_bank_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+
+	// reading and writing
+	virtual DECLARE_READ8_MEMBER(read_40xx) override;
+	virtual DECLARE_READ8_MEMBER(read_08xx) override { return 0xff; }
+	virtual DECLARE_WRITE8_MEMBER(write_08xx) override;
+	DECLARE_WRITE8_MEMBER(bank_w);
+
+protected:
+	// device-level overrides
+	virtual void device_start() override;
+	virtual void device_reset() override;
+	virtual void device_add_mconfig(machine_config &config) override;
+
+	required_device<ym2149_device> m_ym2149;
+	int m_bank;
+};
+
+
 // device type definition
 DECLARE_DEVICE_TYPE(A78_ROM,             a78_rom_device)
 DECLARE_DEVICE_TYPE(A78_ROM_SG,          a78_rom_sg_device)
@@ -492,5 +517,6 @@ DECLARE_DEVICE_TYPE(A78_ROM_Y800_SG,     a78_rom_y800_sg_device)
 DECLARE_DEVICE_TYPE(A78_ROM_Y800_SG_POKEY, a78_rom_y800_sg_pokey_device)
 DECLARE_DEVICE_TYPE(A78_ROM_Y800_SG_RAM, a78_rom_y800_sg_ram_device)
 DECLARE_DEVICE_TYPE(A78_ROM_Y800_SG9,    a78_rom_y800_sg9_device)
+DECLARE_DEVICE_TYPE(A78_ROM_Y800_BANK,   a78_rom_y800_bank_device)
 
 #endif // MAME_BUS_A7800_ROM_H

@@ -336,7 +336,8 @@ static const a78_slot slot_list[] =
 	{ A78_TYPE2_YM2149, "a78_y800_t2" },
 	{ A78_TYPE3_YM2149, "a78_y800_t3" },
 	{ A78_TYPE6_YM2149, "a78_y800_t6" },
-	{ A78_TYPEA_YM2149, "a78_y800_ta" }
+	{ A78_TYPEA_YM2149, "a78_y800_ta" },
+	{ A78_TYPE_YM_BANKED, "a78_y800_bank" }
 
 };
 
@@ -514,6 +515,11 @@ image_init_result a78_cart_slot_device::call_load()
 			// (for now) mirror ram implies no bankswitch format is used
 			else if ((mapper & 0x0080) == 0x0080)
 				m_type = A78_TYPE8;
+
+			// lokey-7800-ym 32-pin board: project-specific Mapper byte at
+			// offset 64 (1 = YmBanked), unambiguous, always wins
+			if (has_ym2149 && head[64] == 1)
+				m_type = A78_TYPE_YM_BANKED;
 
 			logerror("Cart type: 0x%x\n", m_type);
 
@@ -712,6 +718,11 @@ std::string a78_cart_slot_device::get_default_card_software(get_default_card_sof
 			type = A78_ABSOLUTE;
 		else if ((mapper & 0x0080) == 0x0080)
 			type = A78_TYPE8;
+
+		// lokey-7800-ym 32-pin board: project-specific Mapper byte at
+		// offset 64 (1 = YmBanked), unambiguous, always wins
+		if (has_ym2149 && head[64] == 1)
+			type = A78_TYPE_YM_BANKED;
 
 		logerror("Cart type: %x\n", type);
 		slot_string = a78_get_slot(type);

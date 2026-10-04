@@ -303,9 +303,9 @@ void a78_rom_y800_bank_device::device_start()
 
 void a78_rom_y800_bank_device::device_reset()
 {
-	// YM IOA has pull-ups and boots in input mode (reg 7 bit 6 = 0), so the
-	// bank-select GAL input floats high == bank 15
-	m_bank = 15;
+	// YM IOA has 10k pull-ups and boots in input mode (reg 7 bit 6 = 0).
+	// Pull-ups pull IOA0-IOA4 high (%11111 = 31), mirroring the top fixed bank.
+	m_bank = (m_rom_size >= 0x4000) ? ((m_rom_size / 0x4000) - 1) : 0;
 }
 
 
@@ -661,11 +661,17 @@ READ8_MEMBER(a78_rom_y800_bank_device::read_40xx)
 {
 	if (offset < 0x4000)
 	{
-		uint32_t bank = m_bank % (m_rom_size / 0x4000);
+		uint32_t num_banks = m_rom_size / 0x4000;
+		uint32_t bank = num_banks ? (m_bank % num_banks) : 0;
 		return m_rom[(bank * 0x4000) + (offset & 0x3fff)];
 	}
 	else
-		return m_rom[(m_rom_size - 0x8000) + (offset - 0x4000)];
+	{
+		if (m_rom_size >= 0x8000)
+			return m_rom[(m_rom_size - 0x8000) + (offset - 0x4000)];
+		else
+			return 0xff;
+	}
 }
 
 WRITE8_MEMBER(a78_rom_y800_bank_device::write_08xx)
@@ -678,7 +684,7 @@ WRITE8_MEMBER(a78_rom_y800_bank_device::write_08xx)
 
 WRITE8_MEMBER(a78_rom_y800_bank_device::bank_w)
 {
-	m_bank = data & 0x0f;
+	m_bank = data & 0x1f;
 }
 
 

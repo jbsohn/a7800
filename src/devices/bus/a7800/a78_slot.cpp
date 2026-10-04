@@ -409,10 +409,9 @@ image_init_result a78_cart_slot_device::call_load()
 				len = length() - 128;
 			}
 
-			// let's try to auto-fix some common errors in the header
 			mapper = validate_header((head[53] << 8) | head[54], true);
 			const uint8_t header_version = head[0];
-			const bool has_ym2149 = (header_version >= 4) ? ((head[66] << 8 | head[67]) == 0x0800) : false;
+			const bool has_ym2149 = (header_version >= 4) ? (((head[66] << 8 | head[67]) & 0x0800) != 0) : false;
 
 			switch (mapper & 0xe02e)
 			{
@@ -517,8 +516,8 @@ image_init_result a78_cart_slot_device::call_load()
 				m_type = A78_TYPE8;
 
 			// lokey-7800-ym 32-pin board: project-specific Mapper byte at
-			// offset 64 (1 = YmBanked), unambiguous, always wins
-			if (has_ym2149 && head[64] == 1)
+			// offset 64 (1 = YmBanked) or YM with ROM > 48KB
+			if (has_ym2149 && (head[64] == 1 || (len > 48 * 1024 && head[64] == 0)))
 				m_type = A78_TYPE_YM_BANKED;
 
 			logerror("Cart type: 0x%x\n", m_type);
@@ -614,7 +613,7 @@ std::string a78_cart_slot_device::get_default_card_software(get_default_card_sof
 		// let's try to auto-fix some common errors in the header
 		mapper = validate_header((head[53] << 8) | head[54], false);
 		const uint8_t header_version = head[0];
-		const bool has_ym2149 = (header_version >= 4) ? ((head[66] << 8 | head[67]) == 0x0800) : false;
+		const bool has_ym2149 = (header_version >= 4) ? (((head[66] << 8 | head[67]) & 0x0800) != 0) : false;
 
 		switch (mapper & 0xe02e)
 		{
@@ -720,8 +719,9 @@ std::string a78_cart_slot_device::get_default_card_software(get_default_card_sof
 			type = A78_TYPE8;
 
 		// lokey-7800-ym 32-pin board: project-specific Mapper byte at
-		// offset 64 (1 = YmBanked), unambiguous, always wins
-		if (has_ym2149 && head[64] == 1)
+		// offset 64 (1 = YmBanked) or YM with ROM > 48KB
+		const uint32_t rom_size = hook.image_file()->size() - 128;
+		if (has_ym2149 && (head[64] == 1 || (rom_size > 48 * 1024 && head[64] == 0)))
 			type = A78_TYPE_YM_BANKED;
 
 		logerror("Cart type: %x\n", type);
@@ -864,7 +864,7 @@ WRITE8_MEMBER(a78_cart_slot_device::write_40xx)
  -------|-------------------|-----------
  66     | v4 audio_hi       |  1 byte
         |                   |
-        | bit 6 = YM2149 @ $0800/$0801
+        | bit 3 = YM2149 @ $0800/$0801 (word bit 11, 0x0800)
  -------|-------------------|-----------
  67     | v4 audio_lo       |  1 byte
  -------|-------------------|-----------
@@ -996,7 +996,7 @@ void a78_cart_slot_device::internal_header_logging(uint8_t *header, uint32_t len
 	logerror( "\t\tmRAM at $4000:   %s\n", BIT(head_mapper, 7) ? "Yes" : "No");
 	if (head_version >= 4)
 	{
-		logerror( "\t\tYM2149 at $800:  %s\n", BIT(head_audio_hi, 6) ? "Yes" : "No");
+		logerror( "\t\tYM2149 at $800:  %s\n", BIT(head_audio_hi, 3) ? "Yes" : "No");
 	}
 	logerror( "\t\tSpecial:         %s ", (head_mapper & 0xff00) ? "Yes" : "No");
 	if (head_mapper & 0xff00)
